@@ -1,0 +1,159 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+}
+
+body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+}
+
+body {
+    background-color: darkgrey;
+    font-family: "Rubik", sans-serif;
+    line-height: 24px;
+    /* 150% */
+    color: #67727E;
+}
+
+.container {
+    width: 630px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.comment,
+.new-comment {
+    display: flex;
+    border-radius: 8px;
+    background: #FFF;
+    margin-bottom: 20px;
+    padding: 24px;
+    gap: 24px;
+}
+
+.comment-rating {
+    background-color: darkgray;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 40px;
+    height: 100px;
+    flex-shrink: 0;
+
+    &>* {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    strong {
+        flex-grow: 1;
+        color: #5357B6;
+    }
+
+    a {
+        flex-basis: 35px;
+
+        &:first-child {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        &:last-child {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        &:hover {
+            background-color: gray;
+        }
+    }
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.comment-body {
+    flex-grow: 1;
+}
+
+.profile-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+
+    &>img {
+        border-radius: 50%;
+    }
+
+    strong {
+        color: #334253;
+    }
+}
+
+.reply-btn {
+    color: #5357B6;
+    font-weight: bold;
+
+    svg {
+        display: inline-block;
+        margin-right: 8px;
+    }
+}
+
+.new-comment form {
+    display: flex;
+    width: 100%;
+    gap: 15px;
+}
+
+.new-comment textarea {
+    flex-grow: 1;
+    border-radius: 8px;
+    border: 1px solid #E9EBF0;
+    padding: 5px;
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+.new-comment button {
+    background-color: #5357B6;
+    color: #fff;
+    font-weight: bold;
+    border: 0;
+    border-radius: 8px;
+    align-self: flex-start;
+    padding: 12px 24px;
+}
