@@ -4,10 +4,16 @@ const supabaseApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmF
 
 const _supabase = supabase.createClient(supabaseUrl, supabaseApiKey)
 
-const commentForm = document.querySelector(".commenForm")
-const newcomments = document.querySelector(".comments")
+const commentForm = qs(".commenForm")
+const newcomments = qs(".comments")
+const loginform = qs(".loginForm")
+const registerform = qs(".registerForm")
+
 
 commentForm.addEventListener("submit", newComment)
+registerform.addEventListener("submit", signup)
+
+loginform.addEventListener("submit", loginForm)
 
 async function getData() {
 
@@ -19,6 +25,20 @@ async function getData() {
     }
     return data
 }
+
+
+
+async function getreplyData() {
+
+    const { data, error } = await _supabase
+        .from('reply')
+        .select()
+    if (error) {
+        return []
+    }
+    return data
+}
+
 
 async function getNewComment() {
     newcomments.innerHTML = ""
@@ -48,23 +68,37 @@ async function getNewComment() {
                     <span>${comment.created_at}</span>
                 </div>
 
-                <div>
-                    <a class="delete-btn" href="#">
-                    <img src="assets/img/Mask 2.svg" alt="">
-                    </a>
-                </div>
-
+                     <div class="btns">
+                            <a class="delete-btn" href="#">
+                                <img src="assets/img/Mask 2.svg" alt="">
+                            </a>
+                            <a class="reply-btn" href="#">
+                                <img src="assets/img/Reply.svg" alt="">
+                            </a>
+                    </div>
+                    
+                    </div>
+                     <p>${comment.new_comment}</p>
+                
             </div>
-            <p>${comment.new_comment}</p>
-        </div>
 
-        </div>
+            <form class="replyFormDiv">
+                    <input type="text" name="replycomment" data-replyId="">
+                    <button type="submit">submit</button>
+             </form>
+
   `
 
     }
     const deletbtns = document.querySelectorAll(".delete-btn")
     const ratingup = document.querySelectorAll(".comment-rating-up")
     const ratingdown = document.querySelectorAll(".comment-rating-down")
+    const replyBtns = document.querySelectorAll(".reply-btn")
+
+    for (const replyBtn of replyBtns) {
+        replyBtn.addEventListener("click", replyComment)
+    }
+
 
     for (const down of ratingdown) {
         down.addEventListener("click", ratingDown)
@@ -80,6 +114,61 @@ async function getNewComment() {
     }
 
 }
+
+
+
+async function replyComment(e) {
+    e.preventDefault()
+    const repylForms = document.querySelectorAll(".replyFormDiv")
+    const repylFormdiv = document.querySelectorAll(".replyFormDiv")
+
+    const commentElement = e.target.closest('.comment');
+    if (!commentElement) return; //
+    // Yorum elementi içindeki yanıt formunu bulun
+    const replyForm = commentElement.querySelector('.replyFormDiv');
+
+    replyForm.style.display = "block";
+
+    // const replyInput = replyForm.querySelector('input[name="replycomment"]');
+    // replyInput.focus();
+
+
+    for (const repylForm of repylForms) {
+        repylForm.addEventListener("submit", async (e) => {
+            e.preventDefault()
+            console.log("oldu");
+            const user = await getreplyData()
+            console.log(user);
+
+            const isauth = await isAuth()
+
+            console.log(isauth);
+            const formData = new FormData(e.target)
+            const formObj = Object.fromEntries(formData)
+            console.log(formObj);
+
+
+            const { data, error } = await _supabase
+                .from('reply')
+                .insert([
+                    {
+                        comment_reply: formObj.replycomment,
+                        reply_commenter: isauth.email
+
+                    }
+                ])
+                .select()
+
+            console.log(data);
+            console.log(error);
+
+
+        })
+    }
+
+}
+
+
 
 
 
@@ -148,6 +237,8 @@ async function newComment(e) {
 
     const formdata = new FormData(e.target)
     const formObj = Object.fromEntries(formdata)
+    const isauth = await isAuth()
+    console.log(isauth);
     console.log(formObj);
 
 
@@ -155,7 +246,7 @@ async function newComment(e) {
         .from('comments')
         .insert([{
 
-            new_commenter: formObj.new_commenter,
+            new_commenter: isauth.email,
             new_comment: formObj.new_comment
         }
         ])
@@ -164,6 +255,61 @@ async function newComment(e) {
     e.target.reset()
     getNewComment()
     console.log(data);
+}
+
+
+async function signup(e) {
+    e.preventDefault()
+
+    const formdata = Object.fromEntries(new FormData(e.target))
+
+    console.log(formdata.registerEmail);
+    console.log(formdata.registerPassword);
+
+
+    const { data, error } = await _supabase.auth.signUp({
+        email: formdata.registerEmail,
+        password: formdata.registerPassword,
+    })
+    console.log(data);
+
+}
+
+async function loginForm(e) {
+    e.preventDefault()
+
+    const formdata = Object.fromEntries(new FormData(e.target))
+    // console.log(formdata.loginEmail);
+    // console.log(formdata.loginPassword);
+
+
+    const { data, error } = await _supabase.auth.signInWithPassword({
+        email: formdata.loginEmail,
+        password: formdata.loginPassword,
+    })
+    if (!error) {
+        window.location.href = "index.html"
+    } else {
+        window.location.href = "login.html"
+    }
+    console.log(data);
+
+}
+
+
+async function isAuth() {
+
+    const { data, error } = await _supabase.auth.getSession()
+    if (!error && data.session !== null) {
+        window.location.href = "index.html"
+        return data.session.user;
+    } else {
+        window.location.href = "login.html"
+    }
+
+    console.log(data);
+
+
 }
 
 getNewComment() 
